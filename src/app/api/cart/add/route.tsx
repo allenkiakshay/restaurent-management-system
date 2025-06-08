@@ -46,7 +46,7 @@ export async function POST(request: Request) {
       },
     });
 
-    if (existingCart?.restaurantId !== restaurantId) {
+    if (existingCart && existingCart.restaurantId !== restaurantId) {
       return NextResponse.json(
         { error: "Cart already exists for a different restaurant" },
         { status: 400 }
@@ -136,11 +136,34 @@ export async function POST(request: Request) {
             },
           });
 
+          const cart_items = await prisma.cartItem.findMany({
+            where: { cartId: cart.id },
+          });
+
+          if (cart_items.length === 0) {
+            // If no items left in the cart, delete the cart
+            await prisma.cart.delete({
+              where: { id: cart.id },
+            });
+          }
+
           return NextResponse.json(
             { message: "Item removed from cart" },
             { status: 200 }
           );
         }
+
+        const cart_items = await prisma.cartItem.findMany({
+          where: { cartId: cart.id },
+        });
+
+        if (cart_items.length === 0) {
+          // If no items left in the cart, delete the cart
+          await prisma.cart.delete({
+            where: { id: cart.id },
+          });
+        }
+
         return NextResponse.json(
           { message: "Item quantity decremented in cart" },
           { status: 200 }
@@ -158,6 +181,17 @@ export async function POST(request: Request) {
             },
           },
         });
+
+        const cart_items = await prisma.cartItem.findMany({
+          where: { cartId: cart.id },
+        });
+
+        if (cart_items.length === 0) {
+          // If no items left in the cart, delete the cart
+          await prisma.cart.delete({
+            where: { id: cart.id },
+          });
+        }
 
         return NextResponse.json(
           { message: "Item removed from cart" },
