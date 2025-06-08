@@ -13,7 +13,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith("/restaurants") ||
     pathname.startsWith("/update-payment") ||
     pathname.startsWith("/profile") ||
-    pathname.startsWith("/cart") || 
+    pathname.startsWith("/cart") ||
     pathname.startsWith("/checkout") ||
     pathname.startsWith("/place-order")
   ) {
@@ -33,5 +33,14 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/update-payment", "/restaurants/:path*", "/profile", "/cart"],
+  matcher: [
+    "/update-payment",
+    "/restaurants/:path*",
+    "/profile",
+    "/cart",
+    "/checkout",
+    "/place-order",
+    "/dashboard/:path*",
+    "/orders/:path*",
+  ],
 };
