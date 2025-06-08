@@ -29,6 +29,12 @@ export async function middleware(req: NextRequest) {
     }
   }
 
+  if (pathname.startsWith("/checkout")) {
+    if (token?.role !== "ADMIN" && token?.role !== "MANAGER") {
+      return NextResponse.redirect(new URL("/unauthorized", req.url));
+    }
+  }
+
   return NextResponse.next();
 }
 

@@ -323,7 +323,7 @@ const CartPage = () => {
                 <span>₹{subtotal}</span>
               </div>
 
-              {session.data?.user.role === "MEMBER" ? (
+              {session.data?.user.role === "USER" ? (
                 <button
                   className="w-full bg-yellow-400 hover:bg-yellow-500 text-white py-3 rounded-md font-semibold text-lg flex items-center justify-center"
                   onClick={() => handleCreateOrder(null)}
