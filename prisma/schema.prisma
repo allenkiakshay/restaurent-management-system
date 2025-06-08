@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String
+  password    String
+  role        Role     @default(USER)
+  country     Country  @default(IN)
+  phoneNumber String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  carts Cart[]
+}
+
+enum Role {
+  USER
+  ADMIN
+  MANAGER
+}
+
+enum Country {
+  US
+  UK
+  CA
+  AU
+  IN
+}
+
+model Restaurant {
+  id         String   @id @default(cuid())
+  name       String
+  location   String
+  country    Country  @default(IN)
+  managerId  String
+  priceLevel String
+  rating     Float
+  cuisine    String
+  image      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  items Items[]
+}
+
+model Items {
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  price        Float
+  restaurantId String
+  image        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  cartItems  CartItem[]
+}
+
+model Cart {
+  id            String         @id @default(cuid())
+  userId        String
+  restaurantId  String
+  totalPrice    Float
+  status        CartStatus     @default(PENDING)
+  paymentMethod PaymentMethod?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  user  User       @relation(fields: [userId], references: [id])
+  items CartItem[]
+}
+
+enum CartStatus {
+  PENDING
+  ORDERED
+  COMPLETED
+  CANCELLED
+  PAID
+}
+
+enum PaymentMethod {
+  CASH
+  CARD
+  UPI
+  WALLET
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  cartId    String
+  itemId    String
+  quantity  Int      @default(1)
+  price     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cart Cart  @relation(fields: [cartId], references: [id])
+  item Items @relation(fields: [itemId], references: [id])
+}
