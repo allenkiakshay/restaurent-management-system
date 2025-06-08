@@ -11,14 +11,14 @@ declare module "next-auth" {
     user: {
       id: string;
       email: string;
-      role: "ADMIN" | "MANAGER" | "MEMBER";
+      role: "ADMIN" | "MANAGER" | "USER";
     };
   }
 
   interface User {
     id: string;
     email: string;
-    role: "ADMIN" | "MANAGER" | "MEMBER";
+    role: "ADMIN" | "MANAGER" | "USER";
   }
 }
 
@@ -26,7 +26,7 @@ declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     email: string;
-    role: "ADMIN" | "MANAGER" | "MEMBER";
+    role: "ADMIN" | "MANAGER" | "USER";
   }
 }
 
@@ -61,8 +61,6 @@ const authOptions: NextAuthOptions = {
           throw new Error("Email and password are required.");
         }
 
-        console.log("Authorizing user with email:", credentials.email);
-
         try {
           const user = await prisma.user.findUnique({
             where: {
@@ -90,7 +88,7 @@ const authOptions: NextAuthOptions = {
           }
 
           // Map the role to allowed values, or throw if not allowed
-          const allowedRoles = ["ADMIN", "MANAGER", "MEMBER"] as const;
+          const allowedRoles = ["ADMIN", "MANAGER", "USER"] as const;
           if (!allowedRoles.includes(user.role as any)) {
             throw new Error("User role is not allowed.");
           }
@@ -99,7 +97,7 @@ const authOptions: NextAuthOptions = {
           return {
             id: user.id,
             email: user.email,
-            role: user.role as "ADMIN" | "MANAGER" | "MEMBER",
+            role: user.role as "ADMIN" | "MANAGER" | "USER",
           };
         } catch (error) {
           console.error("Error in authorize:", error);
